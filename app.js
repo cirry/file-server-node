@@ -11,7 +11,7 @@ async function read() {
         const files = await readdir(join(__dirname, 'publish'), {withFileTypes: true, recursive: true});
         console.log(files)
         let ext = extname(files[1].name).slice(1);
-        console.log(files[1].name, ext, basename(files[1].path)
+        console.log(files[1].name, ext, basename(files[1].path))
         // for (const file of files) {
         //     let filename = basename(file.path)
         //     let fileext = extname(file.path).slice(1);
