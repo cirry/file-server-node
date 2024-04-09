@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors');
-const { existsSync, stat, } = require('node:fs')
+const { existsSync, stat, readFileSync } = require('node:fs')
 const { mkdir, readdir, } = require('node:fs/promises');
 const {
     join,
@@ -77,6 +77,16 @@ getFileInfo = (file) => new Promise((resolve, reject) => {
     })
 },)
 
+previewFile = (query) => {
+    const { filePath } = query
+    try {
+        const content = readFileSync(filePath, 'utf8');
+        return { code: 200, message: 'success', data: content }
+    } catch (err) {
+        return { code: 403, message: err, data: null }
+    }
+}
+
 app.get('/api/path', async (req, res) => {
     console.log(req.query)
     let result = await read(req.query)
@@ -87,6 +97,12 @@ app.get('/api/downloadFile', (req, res) => {
     console.log(req.query, '/api/downloadFile')
 
     downloadFile(req.query.filePath, res)
+})
+
+app.get('/api/previewFile', (req, res) => {
+    console.log(req.query)
+    const result = previewFile({ filePath: req.query.filePath })
+    res.status(result.code).json(result)
 })
 
 app.listen(3006, () => {
