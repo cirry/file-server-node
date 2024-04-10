@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors');
+const os = require('os');
 const { existsSync, stat, readFileSync } = require('node:fs')
 const { mkdir, readdir, } = require('node:fs/promises');
 const {
@@ -13,7 +14,10 @@ const { downloadFile } = require('./http/downfile')
 const app = express()
 
 app.use(cors())
+console.log(join(__dirname, 'publish'))
+app.use('/publish', express.static(join(__dirname, 'publish')))
 
+let imageExts = ['png', 'jpg', 'jpeg', 'webp', 'svg', 'ico', 'avif', 'tif', 'bmp', 'gif']
 async function read(params) {
     const { path, type } = params
     let pathArr = path.split('/')
@@ -79,8 +83,17 @@ getFileInfo = (file) => new Promise((resolve, reject) => {
 
 previewFile = (query) => {
     const { filePath } = query
+    // 获取文件类型
+    let ext = extname(filePath).split('.')[1]
+    let content = ''
     try {
-        const content = readFileSync(filePath, 'utf8');
+        if (imageExts.includes(ext)) {
+            content = readFileSync(filePath,);
+            content = Buffer.from(content).toString('base64')
+        } else {
+            content = readFileSync(filePath, "utf-8");
+            content = content.replace(new RegExp("\\r\\n", "g"), '\n')
+        }
         return { code: 200, message: 'success', data: content }
     } catch (err) {
         return { code: 403, message: err, data: null }
@@ -88,19 +101,15 @@ previewFile = (query) => {
 }
 
 app.get('/api/path', async (req, res) => {
-    console.log(req.query)
     let result = await read(req.query)
     res.status(result.code).json(result)
 })
 
 app.get('/api/downloadFile', (req, res) => {
-    console.log(req.query, '/api/downloadFile')
-
     downloadFile(req.query.filePath, res)
 })
 
 app.get('/api/previewFile', (req, res) => {
-    console.log(req.query)
     const result = previewFile({ filePath: req.query.filePath })
     res.status(result.code).json(result)
 })
@@ -108,4 +117,5 @@ app.get('/api/previewFile', (req, res) => {
 app.listen(3006, () => {
     console.log('访问成功,请到  http://localhost:3006')
 })
+
 
