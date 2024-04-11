@@ -1,20 +1,18 @@
 const express = require('express')
 const cors = require('cors');
 const os = require('os');
-const { existsSync, stat, readFileSync } = require('node:fs')
+const { existsSync, stat, readFileSync, createReadStream } = require('node:fs')
 const { mkdir, readdir, } = require('node:fs/promises');
-const {
-    join,
-    basename,
-    extname,
-
-} = require('node:path');
+const { join, basename, extname, } = require('node:path');
 const { log } = require('node:console');
+const { getExtname, } = require('./utils/tools.js')
+
 const { downloadFile } = require('./http/downfile')
+const { getPreviewMode, getFileType, getFileExtension } = require('./utils/mime.js')
 const app = express()
+const FileType = require('file-type');
 
 app.use(cors())
-console.log(join(__dirname, 'publish'))
 app.use('/publish', express.static(join(__dirname, 'publish')))
 
 let imageExts = ['png', 'jpg', 'jpeg', 'webp', 'svg', 'ico', 'avif', 'tif', 'bmp', 'gif']
@@ -77,7 +75,17 @@ getFileInfo = (file) => new Promise((resolve, reject) => {
             reject(err);
             return;
         }
-        resolve({ name: file.name, ext: extname(file.path).slice(1), type: 'file', mtime: stats.mtime, size: stats.size })
+        let extname = getExtname(file.path)
+        let extension = getFileType(extname)
+        resolve({
+            name: file.name,
+            ext: extname,
+            mime: extension,
+            canPreview: getPreviewMode(extension),
+            type: 'file',
+            mtime: stats.mtime,
+            size: stats.size
+        })
     })
 },)
 
@@ -100,6 +108,10 @@ previewFile = (query) => {
     }
 }
 
+const getFileDetail = (query) => {
+    const { filePath } = query
+
+}
 app.get('/api/path', async (req, res) => {
     let result = await read(req.query)
     res.status(result.code).json(result)
@@ -112,6 +124,10 @@ app.get('/api/downloadFile', (req, res) => {
 app.get('/api/previewFile', (req, res) => {
     const result = previewFile({ filePath: req.query.filePath })
     res.status(result.code).json(result)
+})
+
+app.get('/api/fileDetail', (req, res) => {
+    const result = ''
 })
 
 app.listen(3006, () => {
