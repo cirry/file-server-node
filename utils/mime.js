@@ -1,4 +1,10 @@
 const mime = require('mime')
+// mime.define({ 'text/x-abc': ['abc', 'abcd'] });
+// mime.getType('abcd');            // ⇨ 'text/x-abc'
+// mime.getExtension('text/x-abc')  // ⇨ 'abc'
+mime.define({ 'application/x-ruby': ['rb'] })
+mime.define({ 'text/plain': ['clj', 'cfg', 'config',] })
+mime.define({ 'text/x-python3': ['py', 'py3', 'py3x', 'pyi'] })
 
 const preViewList = {
     text: [
@@ -10,6 +16,10 @@ const preViewList = {
         "application/toml",
         "application/wasm",
         "application/xhtml+xml",
+        "application/x-ruby",
+        "text/x-python",
+        "text/x-python3",
+        "application/manifest+json",
         "application/x-sql",
         "application/xml",
         "text/cache-manifest",
@@ -22,6 +32,8 @@ const preViewList = {
         "text/javascript",
         "text/jsx",
         "text/less",
+        "text/x-sass",
+        "text/x-scss",
         "text/markdown",
         "text/mathml",
         "text/mdx",
@@ -33,8 +45,10 @@ const preViewList = {
         "text/yaml",
     ],
     video: [
-        "video/h264",
         "video/mp4",
+        "video/x-m4v",
+        "video/webm",
+        "video/ogg",
     ],
     audio: [
         "audio/mp3",
@@ -43,6 +57,7 @@ const preViewList = {
         "audio/ogg",
         "audio/wav",
         "audio/webm",
+        "audio/x-flac",
     ],
     image: [
         "image/bmp",
