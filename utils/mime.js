@@ -6,8 +6,18 @@ mime.define({ 'application/x-ruby': ['rb'] })
 mime.define({ 'text/plain': ['clj', 'cfg', 'config',] })
 mime.define({ 'text/x-python3': ['py', 'py3', 'py3x', 'pyi'] })
 
-const preViewList = {
+const canViewList = {
     text: [
+        "text/calendar",
+        "text/richtext",
+        "text/slim",
+    ],
+    code: [
+        "text/mdx",
+        "text/plain",
+        "text/mathml",
+        "text/markdown",
+        "text/css",
         'application/javascript',
         "application/x-httpd-php",
         'application/json',
@@ -24,9 +34,9 @@ const preViewList = {
         "application/xml",
         "text/cache-manifest",
         "text/coffeescript",
-        "text/calendar",
-        "text/css",
-        "text/csv",
+        "text/stylus",
+        "text/xml",
+        "text/yaml",
         "text/html",
         "text/jade",
         "text/javascript",
@@ -34,15 +44,89 @@ const preViewList = {
         "text/less",
         "text/x-sass",
         "text/x-scss",
-        "text/markdown",
-        "text/mathml",
-        "text/mdx",
-        "text/plain",
+    ],
+    video: [
+        "video/mp4",
+        "video/x-m4v",
+        "video/webm",
+        "video/ogg",
+    ],
+    audio: [
+        "audio/mp3",
+        "audio/mp4",
+        "audio/mpeg",
+        "audio/ogg",
+        "audio/wav",
+        "audio/webm",
+        "audio/x-flac",
+    ],
+    image: [
+        "image/bmp",
+        "image/gif",
+        "image/jpeg",
+        "image/png",
+        "image/svg+xml",
+        "image/webp",
+    ],
+
+}
+
+const preViewList = {
+    text: [
+        "text/calendar",
         "text/richtext",
         "text/slim",
+    ],
+    doc: [
+        "application/msword",
+        "text/csv",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "application/vnd.openxmlformats-officedocument.presentationml.slide",
+        "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+        "application/vnd.openxmlformats-officedocument.presentationml.template",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.ms-excel",
+        "application/pdf",
+        "application/vnd.oasis.opendocument.text"
+
+
+    ],
+    code: [
+        "text/mdx",
+        "text/plain",
+        "text/mathml",
+        "text/markdown",
+        "text/css",
+        'application/javascript',
+        "application/x-httpd-php",
+        'application/json',
+        "application/x-latex",
+        "application/sql",
+        "application/toml",
+        "application/wasm",
+        "application/xhtml+xml",
+        "application/x-ruby",
+        "text/x-python",
+        "text/x-python3",
+        "application/manifest+json",
+        "application/x-sql",
+        "application/xml",
+        "text/cache-manifest",
+        "text/coffeescript",
         "text/stylus",
         "text/xml",
         "text/yaml",
+        "text/html",
+        "text/jade",
+        "text/javascript",
+        "text/jsx",
+        "text/less",
+        "text/x-sass",
+        "text/x-scss",
     ],
     video: [
         "video/mp4",
@@ -70,21 +154,50 @@ const preViewList = {
 }
 
 const getPreviewMode = (extension) => {
-    console.log(extension, 'extension')
     let previewMode = ''
     if (extension) {
-        Object.keys(preViewList).forEach(key => {
-            if (preViewList[key].includes(extension)) {
+        Object.keys(canViewList).forEach(key => {
+            if (canViewList[key].includes(extension)) {
                 previewMode = key
             }
         })
     }
-    return previewMode
+    return !!previewMode
+}
+
+const getFileMime = (filename) => {
+    return mime.getType(filename)
 }
 
 const getFileType = (filename) => {
-    return mime.getType(filename)
+    let mimeType = mime.getType(filename)
+    let previewMode = ''
+    if (mimeType) {
+        Object.keys(preViewList).forEach(key => {
+            if (preViewList[key].includes(mimeType)) {
+                previewMode = key
+            }
+        })
+    }
+    if (!previewMode) {
+        return 'default'
+    }
+    console.log(previewMode, 'previewMode')
+    if (previewMode) {
+        return previewMode
+    } else if (mimeType.startsWith("video")) {
+        return 'video'
+    } else if (mimeType.startsWith("text")) {
+        return 'text'
+    } else if (mimeType.startsWith('image')) {
+        return 'image'
+    } else if (mimeType.startsWith('audio')) {
+        return 'audio'
+    } else {
+        return 'default'
+    }
 }
+
 const getFileExtension = (extname) => {
     return mime.getExtension(extname)
 }
@@ -1346,6 +1459,7 @@ const otherTypes = {
 
 module.exports = {
     getPreviewMode,
-    getFileType,
-    getFileExtension
+    getFileMime,
+    getFileExtension,
+    getFileType
 }

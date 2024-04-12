@@ -8,7 +8,7 @@ const { log } = require('node:console');
 const { getExtname, } = require('./utils/tools.js')
 
 const { downloadFile } = require('./http/downfile')
-const { getPreviewMode, getFileType, getFileExtension } = require('./utils/mime.js')
+const { getPreviewMode, getFileMime, getFileType, getFileExtension } = require('./utils/mime.js')
 const app = express()
 const FileType = require('file-type');
 
@@ -76,13 +76,13 @@ getFileInfo = (file) => new Promise((resolve, reject) => {
             return;
         }
         let extname = getExtname(file.path)
-        let extension = getFileType(extname)
+        let extension = getFileMime(extname)
         resolve({
             name: file.name,
             ext: extname,
             mime: extension,
             canPreview: getPreviewMode(extension),
-            type: 'file',
+            type: getFileType(file.name),
             mtime: stats.mtime,
             size: stats.size
         })
@@ -108,10 +108,6 @@ previewFile = (query) => {
     }
 }
 
-const getFileDetail = (query) => {
-    const { filePath } = query
-
-}
 app.get('/api/path', async (req, res) => {
     let result = await read(req.query)
     res.status(result.code).json(result)
@@ -126,9 +122,6 @@ app.get('/api/previewFile', (req, res) => {
     res.status(result.code).json(result)
 })
 
-app.get('/api/fileDetail', (req, res) => {
-    const result = ''
-})
 
 app.listen(3006, () => {
     console.log('访问成功,请到  http://localhost:3006')
