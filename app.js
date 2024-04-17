@@ -1,16 +1,22 @@
-const express = require('express')
-const cors = require('cors');
-const os = require('os');
-const { existsSync, stat, readFileSync, createReadStream } = require('node:fs')
-const { mkdir, readdir, } = require('node:fs/promises');
-const { join, basename, extname, } = require('node:path');
-const { log } = require('node:console');
-const { getExtname, } = require('./utils/tools.js')
+import express from 'express'
+import cors from 'cors'
+import { existsSync, stat, readFileSync, createReadStream } from 'node:fs'
+import { mkdir, readdir, } from 'node:fs/promises'
+import { join, basename, extname, } from 'node:path';
+import { log } from 'node:console';
+import { getExtname, } from './utils/tools.js'
 
-const { downloadFile } = require('./http/downfile')
-const { getPreviewMode, getFileMime, getFileType, getFileExtension } = require('./utils/mime.js')
+import { downloadFile } from './http/downfile.js'
+import { getPreviewMode, getFileMime, getFileType, getFileExtension } from './utils/mime.js'
 const app = express()
-const FileType = require('file-type');
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+import FileType from 'file-type';
+import { config } from './dist/config.js'
+
+// const { } = require('./dist/config.js')
 
 app.use(cors())
 app.use('/publish', express.static(join(__dirname, 'publish')))
@@ -69,7 +75,7 @@ async function read(params) {
     }
 }
 
-getFileInfo = (file) => new Promise((resolve, reject) => {
+const getFileInfo = (file) => new Promise((resolve, reject) => {
     stat(file.path, (err, stats) => {
         if (err) {
             reject(err);
@@ -89,7 +95,7 @@ getFileInfo = (file) => new Promise((resolve, reject) => {
     })
 },)
 
-previewFile = (query) => {
+const previewFile = (query) => {
     const { filePath } = query
     // 获取文件类型
     let ext = extname(filePath).split('.')[1]
@@ -123,7 +129,7 @@ app.get('/api/previewFile', (req, res) => {
 })
 
 
-app.listen(3006, () => {
+app.listen(config.serverPort, () => {
     console.log('访问成功,请到  http://localhost:3006')
 })
 

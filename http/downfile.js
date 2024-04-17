@@ -1,7 +1,7 @@
-const fs = require("fs");
-const path = require("path");
+import fs from "fs"
+import path from "path"
 
-const downloadFile = (pathUrl, res) => {
+export const downloadFile = (pathUrl, res) => {
     const readStream = fs.createReadStream(pathUrl);
 
     const stats = fs.statSync(pathUrl);
@@ -15,8 +15,4 @@ const downloadFile = (pathUrl, res) => {
     });
 
     readStream.pipe(res);
-}
-
-module.exports = {
-    downloadFile
 }

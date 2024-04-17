@@ -1,4 +1,4 @@
-const mime = require('mime')
+import mime from 'mime'
 // mime.define({ 'text/x-abc': ['abc', 'abcd'] });
 // mime.getType('abcd');            // ⇨ 'text/x-abc'
 // mime.getExtension('text/x-abc')  // ⇨ 'abc'
@@ -153,7 +153,7 @@ const preViewList = {
     ],
 }
 
-const getPreviewMode = (extension) => {
+export const getPreviewMode = (extension) => {
     let previewMode = ''
     if (extension) {
         Object.keys(canViewList).forEach(key => {
@@ -165,11 +165,11 @@ const getPreviewMode = (extension) => {
     return !!previewMode
 }
 
-const getFileMime = (filename) => {
+export const getFileMime = (filename) => {
     return mime.getType(filename)
 }
 
-const getFileType = (filename) => {
+export const getFileType = (filename) => {
     let mimeType = mime.getType(filename)
     let previewMode = ''
     if (mimeType) {
@@ -182,7 +182,6 @@ const getFileType = (filename) => {
     if (!previewMode) {
         return 'default'
     }
-    console.log(previewMode, 'previewMode')
     if (previewMode) {
         return previewMode
     } else if (mimeType.startsWith("video")) {
@@ -198,7 +197,7 @@ const getFileType = (filename) => {
     }
 }
 
-const getFileExtension = (extname) => {
+export const getFileExtension = (extname) => {
     return mime.getExtension(extname)
 }
 
@@ -1456,10 +1455,3 @@ const otherTypes = {
     "video/x-smv": ["smv"],
     "x-conference/x-cooltalk": ["ice"]
 };
-
-module.exports = {
-    getPreviewMode,
-    getFileMime,
-    getFileExtension,
-    getFileType
-}
