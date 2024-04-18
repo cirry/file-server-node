@@ -3,7 +3,6 @@ import cors from 'cors'
 import { existsSync, stat, readFileSync, createReadStream } from 'node:fs'
 import { mkdir, readdir, } from 'node:fs/promises'
 import { join, basename, extname, } from 'node:path';
-import { log } from 'node:console';
 import { getExtname, } from './utils/tools.js'
 
 import { downloadFile } from './http/downfile.js'
@@ -57,7 +56,6 @@ async function read(params) {
                 }
                 let fileStat = await Promise.all(filesPromise)
                 fileStat.forEach(item => item.path = path + '/' + item.name)
-                log(fileStat)
                 let otherFiles = currentPathFiles.filter(file => !file.isFile()).map(item => ({
                     type: 'dir',
                     name: item.name,
