@@ -112,16 +112,16 @@ const previewFile = (query) => {
     }
 }
 
-app.get('/api/path', async (req, res) => {
+app.get('/path', async (req, res) => {
     let result = await read(req.query)
     res.status(result.code).json(result)
 })
 
-app.get('/api/downloadFile', (req, res) => {
+app.get('/downloadFile', (req, res) => {
     downloadFile(req.query.filePath, res)
 })
 
-app.get('/api/previewFile', (req, res) => {
+app.get('/previewFile', (req, res) => {
     const result = previewFile({ filePath: req.query.filePath })
     res.status(result.code).json(result)
 })
